@@ -1,5 +1,6 @@
 import { getServerEnv } from "@/lib/env";
 import { db, schema } from "@/lib/db";
+import { Router, Kalibr, SpanBuilder, TraceCapsule } from "@kalibr/sdk";
 
 type AgentResponse = {
   content: string;
@@ -7,6 +8,13 @@ type AgentResponse = {
   provider: string;
   durationMs: number;
   routingChain: RoutingStep[];
+  kalibrDecision?: {
+    pathId: string;
+    confidence: number;
+    exploration: boolean;
+    reason: string;
+  };
+  traceCapsule?: string;
 };
 
 type RoutingStep = {
@@ -17,6 +25,24 @@ type RoutingStep = {
   reason?: string;
 };
 
+// Initialize Kalibr once (lazy)
+let kalibrInitialized = false;
+function initKalibr() {
+  if (kalibrInitialized) return;
+  const env = getServerEnv();
+  const kalibrKey = (env as Record<string, string>).KALIBR_API_KEY;
+  const kalibrTenant = (env as Record<string, string>).KALIBR_TENANT_ID;
+  if (kalibrKey && kalibrTenant) {
+    Kalibr.init({
+      apiKey: kalibrKey,
+      tenantId: kalibrTenant,
+      environment: "prod",
+      service: "black-dog-registry",
+    });
+    kalibrInitialized = true;
+  }
+}
+
 export async function callAgent(
   systemPrompt: string,
   userMessage: string,
@@ -25,19 +51,97 @@ export async function callAgent(
 ): Promise<AgentResponse> {
   const env = getServerEnv();
   const start = Date.now();
+  initKalibr();
+
+  // TraceCapsule for cross-service observability
+  const capsule = new TraceCapsule({ workflowId: `agent-${action}` });
 
   let content = "";
   let model = "";
   let provider = "";
   const routingChain: RoutingStep[] = [];
+  let kalibrDecision: AgentResponse["kalibrDecision"];
 
-  // Kalibr-style intelligent routing: try providers in priority order with automatic failover
-  // Each step is logged so judges can see the routing chain in real-time
-  let resolved = false;
+  // Try Kalibr Router first (intelligent routing with learning)
+  const kalibrKey = (env as Record<string, string>).KALIBR_API_KEY;
+  if (kalibrKey && env.ANTHROPIC_API_KEY && env.OPENAI_API_KEY) {
+    try {
+      const router = new Router({
+        goal: action,
+        paths: [
+          { model: "claude-sonnet-4-5-20250929", tools: ["muzzle-scanner"] },
+          { model: "gpt-4o", tools: ["muzzle-scanner"] },
+        ],
+        successWhen: (output) => output.length > 20,
+        explorationRate: 0.15,
+      });
 
-  // Route 1: Anthropic (primary)
+      const response = await router.completion([
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userMessage },
+      ]);
+
+      if (response.choices?.[0]?.message?.content) {
+        content = response.choices[0].message.content;
+        model = response.model;
+        provider = model.startsWith("claude") ? "anthropic" : "openai";
+
+        const decision = router.getLastDecision();
+        if (decision) {
+          kalibrDecision = {
+            pathId: decision.path_id,
+            confidence: decision.confidence,
+            exploration: decision.exploration,
+            reason: decision.reason,
+          };
+        }
+
+        routingChain.push({
+          provider: "kalibr",
+          model: response.model,
+          status: "success",
+          latencyMs: Date.now() - start,
+          reason: decision?.reason || "intelligent routing",
+        });
+
+        // Report success to Kalibr for learning
+        await router.report(true).catch(() => {});
+
+        capsule.appendHop({
+          provider,
+          operation: action,
+          model,
+          duration_ms: Date.now() - start,
+          status: "success",
+          input_tokens: response.usage?.prompt_tokens || 0,
+          output_tokens: response.usage?.completion_tokens || 0,
+        });
+      }
+    } catch {
+      routingChain.push({
+        provider: "kalibr",
+        model: "router",
+        status: "failed",
+        latencyMs: Date.now() - start,
+        reason: "router error, falling back",
+      });
+    }
+  }
+
+  // Fallback: manual routing if Kalibr Router didn't resolve
+  let resolved = content.length > 0;
+
+  // Route 1: Anthropic (primary fallback)
   if (env.ANTHROPIC_API_KEY && !resolved) {
     const stepStart = Date.now();
+    const span = new SpanBuilder()
+      .setProvider("anthropic")
+      .setModel("claude-sonnet-4-5-20250929")
+      .setOperation(action)
+      .setUserId(userAlienId)
+      .setService("black-dog-registry")
+      .start();
+
     try {
       const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
@@ -60,19 +164,45 @@ export async function callAgent(
         provider = "anthropic";
         resolved = true;
         routingChain.push({ provider: "anthropic", model: "claude-sonnet-4-5", status: "success", latencyMs: Date.now() - stepStart });
+
+        await span.finish({
+          inputTokens: data.usage?.input_tokens || 0,
+          outputTokens: data.usage?.output_tokens || 0,
+          status: "success",
+        }).catch(() => {});
+
+        capsule.appendHop({
+          provider: "anthropic",
+          operation: action,
+          model: "claude-sonnet-4-5",
+          duration_ms: Date.now() - stepStart,
+          status: "success",
+          input_tokens: data.usage?.input_tokens || 0,
+          output_tokens: data.usage?.output_tokens || 0,
+        });
       } else {
         routingChain.push({ provider: "anthropic", model: "claude-sonnet-4-5", status: "failed", latencyMs: Date.now() - stepStart, reason: "empty response" });
+        await span.error(new Error("empty response"), { inputTokens: 0, outputTokens: 0 }).catch(() => {});
       }
     } catch {
       routingChain.push({ provider: "anthropic", model: "claude-sonnet-4-5", status: "failed", latencyMs: Date.now() - stepStart, reason: "network error" });
+      await span.error(new Error("network error"), { inputTokens: 0, outputTokens: 0 }).catch(() => {});
     }
-  } else if (!env.ANTHROPIC_API_KEY) {
+  } else if (!env.ANTHROPIC_API_KEY && !resolved) {
     routingChain.push({ provider: "anthropic", model: "claude-sonnet-4-5", status: "skipped", reason: "no API key" });
   }
 
   // Route 2: OpenAI (fallback)
   if (env.OPENAI_API_KEY && !resolved) {
     const stepStart = Date.now();
+    const span = new SpanBuilder()
+      .setProvider("openai")
+      .setModel("gpt-4o")
+      .setOperation(action)
+      .setUserId(userAlienId)
+      .setService("black-dog-registry")
+      .start();
+
     try {
       const res = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
@@ -96,13 +226,29 @@ export async function callAgent(
         provider = "openai";
         resolved = true;
         routingChain.push({ provider: "openai", model: "gpt-4o", status: "success", latencyMs: Date.now() - stepStart });
+
+        await span.finish({
+          inputTokens: data.usage?.prompt_tokens || 0,
+          outputTokens: data.usage?.completion_tokens || 0,
+          status: "success",
+        }).catch(() => {});
+
+        capsule.appendHop({
+          provider: "openai",
+          operation: action,
+          model: "gpt-4o",
+          duration_ms: Date.now() - stepStart,
+          status: "success",
+        });
       } else {
         routingChain.push({ provider: "openai", model: "gpt-4o", status: "failed", latencyMs: Date.now() - stepStart, reason: "empty response" });
+        await span.error(new Error("empty response"), { inputTokens: 0, outputTokens: 0 }).catch(() => {});
       }
     } catch {
       routingChain.push({ provider: "openai", model: "gpt-4o", status: "failed", latencyMs: Date.now() - stepStart, reason: "network error" });
+      await span.error(new Error("network error"), { inputTokens: 0, outputTokens: 0 }).catch(() => {});
     }
-  } else if (!env.OPENAI_API_KEY) {
+  } else if (!env.OPENAI_API_KEY && !resolved) {
     routingChain.push({ provider: "openai", model: "gpt-4o", status: "skipped", reason: "no API key" });
   }
 
@@ -113,6 +259,14 @@ export async function callAgent(
     model = "fallback-v1";
     provider = "local";
     routingChain.push({ provider: "local", model: "fallback-v1", status: "success", latencyMs: Date.now() - stepStart });
+
+    capsule.appendHop({
+      provider: "custom",
+      operation: action,
+      model: "fallback-v1",
+      duration_ms: Date.now() - stepStart,
+      status: "success",
+    });
   }
 
   const durationMs = Date.now() - start;
@@ -127,7 +281,15 @@ export async function callAgent(
     durationMs,
   });
 
-  return { content, model, provider, durationMs, routingChain };
+  return {
+    content,
+    model,
+    provider,
+    durationMs,
+    routingChain,
+    kalibrDecision,
+    traceCapsule: capsule.toJson(),
+  };
 }
 
 function generateFallbackResponse(action: string, input: string): string {

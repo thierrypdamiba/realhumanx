@@ -15,10 +15,15 @@
   "dependencies": {
     "@alien_org/auth-client": "^0.2.3",
     "@alien_org/react": "^0.2.6",
+    "@anthropic-ai/sdk": "^0.74.0",
+    "@google/generative-ai": "^0.24.1",
+    "@kalibr/sdk": "^1.4.0",
     "@tanstack/react-query": "^5.90.20",
+    "cohere-ai": "^7.20.0",
     "drizzle-orm": "^0.45.1",
     "lucide-react": "^0.563.0",
     "next": "16.1.6",
+    "openai": "^6.18.0",
     "postgres": "^3.4.5",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -34,7 +39,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "5.9.3"
   },
   "ignoreScripts": [
     "sharp",
