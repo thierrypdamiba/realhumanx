@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Alien Miniapp",
-  description: "Alien Miniapp Boilerplate",
+  title: "RealHuman X",
+  description: "Sybil-resistant social marketplace for verified humans",
 };
 
 export default function RootLayout({
@@ -25,12 +25,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
         <Providers>
-          <main className="mx-auto flex min-h-screen w-full max-w-md flex-col gap-8 px-6 pb-24 pt-12">
+          <main className="mx-auto flex min-h-screen w-full max-w-md flex-col gap-6 px-4 pb-24 pt-safe-top">
             {children}
           </main>
           <TabBar />

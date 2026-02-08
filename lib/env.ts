@@ -2,14 +2,16 @@ import { z } from "zod";
 
 const serverSchema = z.object({
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
-  WEBHOOK_PUBLIC_KEY: z.string().min(1, "WEBHOOK_PUBLIC_KEY is required"),
+  WEBHOOK_PUBLIC_KEY: z.string().default(""),
   ALIEN_JWKS_URL: z.optional(z.url("ALIEN_JWKS_URL must be a valid URL")).default("https://sso.alien-api.com/oauth/jwks"),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  OPENAI_API_KEY: z.string().default(""),
+  ANTHROPIC_API_KEY: z.string().default(""),
 });
 
 const clientSchema = z.object({
-  NEXT_PUBLIC_RECIPIENT_ADDRESS: z.string().min(1, "NEXT_PUBLIC_RECIPIENT_ADDRESS is required"),
-  NEXT_PUBLIC_ALIEN_RECIPIENT_ADDRESS: z.string().min(1, "NEXT_PUBLIC_ALIEN_RECIPIENT_ADDRESS is required"),
+  NEXT_PUBLIC_RECIPIENT_ADDRESS: z.string().default(""),
+  NEXT_PUBLIC_ALIEN_RECIPIENT_ADDRESS: z.string().default(""),
 });
 
 export type ServerEnv = z.infer<typeof serverSchema>;

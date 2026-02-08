@@ -2,18 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { House, Compass, User, Gem, type LucideIcon } from "lucide-react";
+import { House, ShoppingBag, Plus, Bot, User, type LucideIcon } from "lucide-react";
 
 export interface TabItem {
   label: string;
   href: string;
   icon: LucideIcon;
+  isAction?: boolean;
 }
 
 const DEFAULT_TABS: TabItem[] = [
-  { label: "Home", href: "/", icon: House },
-  { label: "Store", href: "/store", icon: Gem },
-  { label: "Explore", href: "/explore", icon: Compass },
+  { label: "Feed", href: "/", icon: House },
+  { label: "Market", href: "/marketplace", icon: ShoppingBag },
+  { label: "Create", href: "/create", icon: Plus, isAction: true },
+  { label: "Agents", href: "/agents", icon: Bot },
   { label: "Profile", href: "/profile", icon: User },
 ];
 
@@ -26,11 +28,25 @@ export function TabBar({ tabs = DEFAULT_TABS }: { tabs?: TabItem[] }) {
 
   return (
     <nav aria-label="Main navigation" className="fixed inset-x-0 bottom-0 z-50">
-      <div className="border-t border-zinc-200/80 bg-white/80 pb-safe-bottom pl-safe-left pr-safe-right backdrop-blur-xl dark:border-zinc-800/80 dark:bg-zinc-950/80">
+      <div className="border-t border-border-subtle bg-surface/90 pb-safe-bottom pl-safe-left pr-safe-right backdrop-blur-xl">
         <div className="mx-auto flex max-w-md">
           {tabs.map((tab) => {
             const active = isActive(tab.href, pathname);
             const Icon = tab.icon;
+
+            if (tab.isAction) {
+              return (
+                <Link
+                  key={tab.href}
+                  href={tab.href}
+                  className="relative flex flex-1 flex-col items-center gap-0.5 pb-2 pt-2"
+                >
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent shadow-lg shadow-accent/20">
+                    <Icon size={20} strokeWidth={2.5} className="text-white" />
+                  </span>
+                </Link>
+              );
+            }
 
             return (
               <Link
@@ -39,18 +55,18 @@ export function TabBar({ tabs = DEFAULT_TABS }: { tabs?: TabItem[] }) {
                 aria-current={active ? "page" : undefined}
                 className={`relative flex flex-1 flex-col items-center gap-0.5 pb-2 pt-2.5 transition-colors duration-150 ${
                   active
-                    ? "text-zinc-900 dark:text-zinc-100"
-                    : "text-zinc-400 active:text-zinc-600 dark:text-zinc-500 dark:active:text-zinc-300"
+                    ? "text-accent-light"
+                    : "text-text-dim active:text-text-muted"
                 }`}
               >
                 <span
                   className={`absolute top-0 h-[2px] w-6 rounded-full transition-all duration-200 ${
                     active
-                      ? "scale-x-100 bg-zinc-900 dark:bg-zinc-100"
+                      ? "scale-x-100 bg-accent"
                       : "scale-x-0 bg-transparent"
                   }`}
                 />
-                <Icon size={22} strokeWidth={active ? 2 : 1.5} />
+                <Icon size={20} strokeWidth={active ? 2 : 1.5} />
                 <span
                   className={`text-[10px] leading-tight tracking-wide ${
                     active ? "font-semibold" : "font-medium"
