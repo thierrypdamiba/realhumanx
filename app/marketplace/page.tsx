@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { ShieldCheck, ShieldAlert, ShieldX, Eye, Search } from "lucide-react";
-import { InlineBadge } from "@/features/clawshield/components/safety-badge";
+import { InlineBadge } from "@/features/muzzle/components/safety-badge";
 import Link from "next/link";
 import { useState } from "react";
 

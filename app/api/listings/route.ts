@@ -4,7 +4,7 @@ import { JwtErrors } from "@alien_org/auth-client";
 import { getListings, createListing, updateListingScan } from "@/features/listings/queries";
 import { CreateListingRequest } from "@/features/listings/dto";
 import { createPost } from "@/features/posts/queries";
-import { scanContent } from "@/features/clawshield/scanner";
+import { scanContent } from "@/features/muzzle/scanner";
 
 export async function GET() {
   try {
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       ...parsed.data,
     });
 
-    // ClawShield auto-scan: analyze listing content for security issues
+    // Muzzle auto-scan: analyze listing content for security issues
     const scanText = `${listing.title}\n${listing.description}\n${(listing.tags || []).join(" ")}`;
     const report = scanContent(scanText, "listing");
     updateListingScan(listing.id, {

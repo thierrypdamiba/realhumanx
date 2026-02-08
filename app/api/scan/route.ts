@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { scanContent } from "@/features/clawshield/scanner";
+import { scanContent } from "@/features/muzzle/scanner";
 
 export async function POST(request: Request) {
   try {

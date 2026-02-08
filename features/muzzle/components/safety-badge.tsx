@@ -44,7 +44,7 @@ export function SafetyBadge({ report }: { report: ScanReport }) {
               </span>
             </div>
             <span className="text-[9px] text-text-dim">
-              ClawShield: {report.summary.totalFindings} finding{report.summary.totalFindings !== 1 ? "s" : ""}
+              Muzzle: {report.summary.totalFindings} finding{report.summary.totalFindings !== 1 ? "s" : ""}
             </span>
           </div>
         </div>
@@ -120,7 +120,7 @@ export function ScanButton({ content, onScanComplete }: { content: string; onSca
       ) : (
         <>
           <Scan size={12} />
-          ClawShield Scan
+          Muzzle Scan
         </>
       )}
     </button>

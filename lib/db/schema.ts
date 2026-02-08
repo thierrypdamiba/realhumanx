@@ -29,7 +29,7 @@ export const listings = pgTable("listings", {
   isAnonymous: boolean("is_anonymous").notNull().default(false), // seller identity hidden publicly
   postedByAgent: boolean("posted_by_agent").notNull().default(false), // agent posted on behalf of human
   requiredCredentials: jsonb("required_credentials").$type<string[]>().default([]), // credentials needed to respond/buy
-  clawshieldScore: integer("clawshield_score"), // 0-100 risk score from ClawShield scan
+  clawshieldScore: integer("clawshield_score"), // 0-100 risk score from Muzzle scan
   clawshieldBand: text("clawshield_band"), // "LOW", "MEDIUM", "HIGH", "CRITICAL"
   clawshieldFindings: integer("clawshield_findings"), // total findings count
   clawshieldReport: jsonb("clawshield_report"), // full scan report JSON
@@ -133,7 +133,7 @@ export const posts = pgTable("posts", {
 
 export type Post = typeof posts.$inferSelect;
 
-// Shared skills: OpenClaw-compatible skill definitions with ClawShield scanning
+// Shared skills: skill definitions with Muzzle security scanning
 export const skills = pgTable("skills", {
   id: uuid("id").primaryKey().defaultRandom(),
   authorAlienId: text("author_alien_id").notNull(),

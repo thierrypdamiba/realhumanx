@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { scanContent } from "@/features/clawshield/scanner";
+import { scanContent } from "@/features/muzzle/scanner";
 import { logSandboxRun } from "@/features/skills/queries";
 import { extractBearerToken, verifyToken } from "@/features/auth/lib";
 
 /**
  * Sandbox execution endpoint.
  * Runs JavaScript code in a restricted Function() scope with no access to
- * Node APIs, fetch, or globals. ClawShield scans before execution.
+ * Node APIs, fetch, or globals. Muzzle scans before execution.
  */
 export async function POST(request: Request) {
   try {
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Code too large (max 10KB)" }, { status: 400 });
     }
 
-    // ClawShield pre-scan: check for dangerous patterns before executing
+    // Muzzle pre-scan: check for dangerous patterns before executing
     const report = scanContent(code, "sandbox");
 
     // Block execution if CRITICAL risk
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
         skillId,
         code,
         language: language || "javascript",
-        error: `BLOCKED: ClawShield detected critical risk (score: ${report.riskScore})`,
+        error: `BLOCKED: Muzzle detected critical risk (score: ${report.riskScore})`,
         durationMs: 0,
         clawshieldScore: report.riskScore,
         clawshieldBand: report.riskBand,
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       return NextResponse.json({
         data: {
           output: null,
-          error: `Execution blocked by ClawShield. Risk: ${report.riskBand} (${report.riskScore}/100). ${report.summary.totalFindings} security issue(s) detected.`,
+          error: `Execution blocked by Muzzle. Risk: ${report.riskBand} (${report.riskScore}/100). ${report.summary.totalFindings} security issue(s) detected.`,
           blocked: true,
           scan: {
             score: report.riskScore,
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
     let error = "";
 
     if (language && language !== "javascript" && language !== "typescript") {
-      output = `[Sandbox] ${language} execution is display-only. Code was scanned by ClawShield.`;
+      output = `[Sandbox] ${language} execution is display-only. Code was scanned by Muzzle.`;
     } else {
       try {
         // Build a sandboxed execution context

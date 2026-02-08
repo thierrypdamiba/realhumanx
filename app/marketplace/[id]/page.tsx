@@ -3,8 +3,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAlien, usePayment, useClipboard, useEvent, useIsMethodSupported } from "@alien_org/react";
 import { ShieldCheck, Star, Bot, ArrowLeft, Eye, Clock, Copy, Check, Share2, Shield } from "lucide-react";
-import { SafetyBadge, ScanButton } from "@/features/clawshield/components/safety-badge";
-import type { ScanReport } from "@/features/clawshield/scanner";
+import { SafetyBadge, ScanButton } from "@/features/muzzle/components/safety-badge";
+import type { ScanReport } from "@/features/muzzle/scanner";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -217,12 +217,12 @@ export default function ListingDetailPage() {
         </div>
       </div>
 
-      {/* ClawShield Safety Scan */}
+      {/* Muzzle Safety Scan */}
       <div className="animate-slide-up rounded-xl border border-border-subtle bg-surface p-4" style={{ animationDelay: "0.07s" }}>
         <div className="flex items-center gap-2 mb-3">
           <Shield size={16} className="text-accent-light" />
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-text-dim">ClawShield Safety</h3>
-          <span className="ml-auto rounded-md bg-purple-500/10 px-2 py-0.5 text-[9px] font-medium text-purple-400">OpenClaw</span>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-text-dim">Muzzle Safety</h3>
+          <span className="ml-auto rounded-md bg-purple-500/10 px-2 py-0.5 text-[9px] font-medium text-purple-400">Security</span>
         </div>
 
         {listing.clawshieldReport ? (

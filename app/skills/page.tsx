@@ -80,7 +80,7 @@ function SandboxPanel({ code, language, onClose }: { code: string; language: str
         </div>
 
         <p className="text-[10px] text-text-dim mb-2">
-          Code is scanned by ClawShield before execution. Critical-risk code is blocked.
+          Code is scanned by Muzzle before execution. Critical-risk code is blocked.
         </p>
 
         <textarea
@@ -111,7 +111,7 @@ function SandboxPanel({ code, language, onClose }: { code: string; language: str
 
         {result ? (
           <div className="mt-3 space-y-2">
-            {/* ClawShield pre-scan result */}
+            {/* Muzzle pre-scan result */}
             {bandConfig ? (
               <div className={`flex items-center gap-2 rounded-lg p-2 ${bandConfig.bg}`}>
                 <bandConfig.icon size={14} className={bandConfig.color} />
@@ -128,7 +128,7 @@ function SandboxPanel({ code, language, onClose }: { code: string; language: str
             {/* Findings */}
             {result.scan.findings.length > 0 ? (
               <div className="rounded-lg bg-surface-raised p-2 space-y-1">
-                <p className="text-[9px] font-semibold text-text-dim">ClawShield Findings:</p>
+                <p className="text-[9px] font-semibold text-text-dim">Muzzle Findings:</p>
                 {result.scan.findings.map((f, i) => (
                   <div key={i} className="flex items-center gap-2 text-[9px]">
                     <span className={`font-bold uppercase ${
@@ -208,7 +208,7 @@ export default function SkillsPage() {
       if (data.error) {
         toast.error(data.error);
       } else {
-        toast.success(`Skill shared! ClawShield: ${data.data.clawshieldBand} risk`);
+        toast.success(`Skill shared! Muzzle: ${data.data.clawshieldBand} risk`);
         setName(""); setDescription(""); setCode(""); setTags("");
         setShowAdd(false);
         queryClient.invalidateQueries({ queryKey: ["skills"] });
@@ -301,7 +301,7 @@ export default function SkillsPage() {
             disabled={addMutation.isPending || !name.trim() || !code.trim()}
             className="w-full rounded-lg bg-accent py-2.5 text-xs font-semibold text-white disabled:opacity-50"
           >
-            {addMutation.isPending ? "Scanning & Sharing..." : "Share Skill (auto-scanned by ClawShield)"}
+            {addMutation.isPending ? "Scanning & Sharing..." : "Share Skill (auto-scanned by Muzzle)"}
           </button>
         </div>
       ) : null}
@@ -394,7 +394,7 @@ export default function SkillsPage() {
             <Code size={32} className="mx-auto mb-3 text-text-dim" />
             <p className="text-sm font-medium text-text-muted">No skills shared yet</p>
             <p className="mt-1 text-xs text-text-dim">
-              Share your first skill. Every submission is auto-scanned by ClawShield.
+              Share your first skill. Every submission is auto-scanned by Muzzle.
             </p>
           </div>
         )}

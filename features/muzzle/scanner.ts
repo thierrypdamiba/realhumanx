@@ -1,8 +1,7 @@
 /**
- * ClawShield Scanner - Adapted for Black Dog Registry
+ * Muzzle Scanner - Black Dog Registry
  *
  * Static security analysis for marketplace listings, skills, and agent code.
- * Based on ClawShield's detection engine (clawshield.dev).
  * Runs on text content directly (no filesystem dependency).
  */
 
@@ -52,7 +51,7 @@ export type ScanReport = {
   };
 };
 
-// Scoring constants (from ClawShield core)
+// Scoring constants
 const SEVERITY_WEIGHTS: Record<Severity, number> = {
   critical: 40,
   high: 25,
@@ -79,7 +78,7 @@ const EXPLOITABILITY_MULTIPLIERS: Record<FindingCategory, number> = {
   "supply-chain": 1.1,
 };
 
-// Detection patterns (from ClawShield core detectors)
+// Detection patterns
 const DETECTION_PATTERNS: Array<{
   category: FindingCategory;
   severity: Severity;

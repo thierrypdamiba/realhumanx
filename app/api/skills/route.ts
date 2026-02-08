@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { verifyToken, extractBearerToken } from "@/features/auth/lib";
 import { JwtErrors } from "@alien_org/auth-client";
 import { createSkill, getSkills } from "@/features/skills/queries";
-import { scanContent } from "@/features/clawshield/scanner";
+import { scanContent } from "@/features/muzzle/scanner";
 import { createPost } from "@/features/posts/queries";
 
 export async function GET() {
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "name, description, and code are required" }, { status: 400 });
     }
 
-    // ClawShield auto-scan the skill code
+    // Muzzle auto-scan the skill code
     const report = scanContent(`${name}\n${description}\n${code}`, "skill");
 
     const skill = await createSkill({
