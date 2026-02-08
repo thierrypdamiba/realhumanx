@@ -2,7 +2,9 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAlien, usePayment, useClipboard, useEvent, useIsMethodSupported } from "@alien_org/react";
-import { ShieldCheck, Star, Bot, ArrowLeft, Eye, Clock, Copy, Check, Share2 } from "lucide-react";
+import { ShieldCheck, Star, Bot, ArrowLeft, Eye, Clock, Copy, Check, Share2, Shield } from "lucide-react";
+import { SafetyBadge, ScanButton } from "@/features/clawshield/components/safety-badge";
+import type { ScanReport } from "@/features/clawshield/scanner";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -32,6 +34,7 @@ export default function ListingDetailPage() {
   const [reviewComment, setReviewComment] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
   const [copied, setCopied] = useState(false);
+  const [scanReport, setScanReport] = useState<ScanReport | null>(null);
 
   const shareListing = () => {
     const shareUrl = `${window.location.origin}/marketplace/${id}`;
@@ -212,6 +215,31 @@ export default function ListingDetailPage() {
             {payment.isLoading ? "Processing..." : "Buy Now"}
           </button>
         </div>
+      </div>
+
+      {/* ClawShield Safety Scan */}
+      <div className="animate-slide-up rounded-xl border border-border-subtle bg-surface p-4" style={{ animationDelay: "0.07s" }}>
+        <div className="flex items-center gap-2 mb-3">
+          <Shield size={16} className="text-accent-light" />
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-text-dim">ClawShield Safety</h3>
+          <span className="ml-auto rounded-md bg-purple-500/10 px-2 py-0.5 text-[9px] font-medium text-purple-400">OpenClaw</span>
+        </div>
+
+        {listing.clawshieldReport ? (
+          <SafetyBadge report={listing.clawshieldReport as ScanReport} />
+        ) : scanReport ? (
+          <SafetyBadge report={scanReport} />
+        ) : (
+          <div className="space-y-2">
+            <p className="text-[10px] text-text-dim">
+              Scan this listing for security risks: credential exposure, code injection, prompt attacks, and more.
+            </p>
+            <ScanButton
+              content={`${listing.title}\n${listing.description}`}
+              onScanComplete={setScanReport}
+            />
+          </div>
+        )}
       </div>
 
       {/* AI Agent Analysis with Kalibr Routing */}

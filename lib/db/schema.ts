@@ -29,6 +29,10 @@ export const listings = pgTable("listings", {
   isAnonymous: boolean("is_anonymous").notNull().default(false), // seller identity hidden publicly
   postedByAgent: boolean("posted_by_agent").notNull().default(false), // agent posted on behalf of human
   requiredCredentials: jsonb("required_credentials").$type<string[]>().default([]), // credentials needed to respond/buy
+  clawshieldScore: integer("clawshield_score"), // 0-100 risk score from ClawShield scan
+  clawshieldBand: text("clawshield_band"), // "LOW", "MEDIUM", "HIGH", "CRITICAL"
+  clawshieldFindings: integer("clawshield_findings"), // total findings count
+  clawshieldReport: jsonb("clawshield_report"), // full scan report JSON
   viewCount: integer("view_count").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),

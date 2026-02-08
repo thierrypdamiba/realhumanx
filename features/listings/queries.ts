@@ -53,6 +53,18 @@ export async function incrementViewCount(id: string): Promise<void> {
     .where(eq(schema.listings.id, id));
 }
 
+export async function updateListingScan(id: string, scanData: {
+  clawshieldScore: number;
+  clawshieldBand: string;
+  clawshieldFindings: number;
+  clawshieldReport: unknown;
+}): Promise<void> {
+  await db
+    .update(schema.listings)
+    .set(scanData)
+    .where(eq(schema.listings.id, id));
+}
+
 export async function deleteListing(id: string, alienId: string): Promise<boolean> {
   const result = await db
     .update(schema.listings)

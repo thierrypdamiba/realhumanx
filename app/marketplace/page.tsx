@@ -1,7 +1,8 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { ShieldCheck, Eye, Search } from "lucide-react";
+import { ShieldCheck, ShieldAlert, ShieldX, Eye, Search } from "lucide-react";
+import { InlineBadge } from "@/features/clawshield/components/safety-badge";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -31,6 +32,8 @@ export default function MarketplacePage() {
     viewCount: number;
     aiGenerated: boolean;
     tags: string[] | null;
+    clawshieldBand: string | null;
+    clawshieldScore: number | null;
     createdAt: string;
   };
 
@@ -111,6 +114,9 @@ export default function MarketplacePage() {
                       <span className="text-[10px] text-text-dim">{listing.viewCount}</span>
                     </div>
                     <span className="rounded-full bg-surface-raised px-2 py-0.5 text-[10px] text-text-dim">{listing.category}</span>
+                    {listing.clawshieldBand ? (
+                      <InlineBadge riskBand={listing.clawshieldBand as "LOW" | "MEDIUM" | "HIGH" | "CRITICAL"} score={listing.clawshieldScore || 0} />
+                    ) : null}
                   </div>
                 </div>
                 <div className="ml-3 text-right">
