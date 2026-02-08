@@ -135,7 +135,7 @@ function generateFallbackResponse(action: string, input: string): string {
     case "generate-listing":
       return JSON.stringify({
         title: `Service: ${input.slice(0, 50)}`,
-        description: `Professional service offering: ${input}. Verified human seller on RealHuman X. All transactions secured via Alien Protocol.`,
+        description: `Professional service offering: ${input}. Verified human seller on Black Dog Registry. All transactions secured via Alien Protocol.`,
         category: "services",
         price: "5",
         tags: ["verified", "human", "service"],
@@ -178,7 +178,7 @@ export async function callGreptileQuery(query: string, repo?: string): Promise<s
 }
 
 export const AGENT_PROMPTS = {
-  listingGenerator: `You are an AI assistant for RealHuman X, a sybil-resistant marketplace for verified humans.
+  listingGenerator: `You are an AI assistant for Black Dog Registry, a sybil-resistant marketplace for verified humans.
 Generate a marketplace listing from the user's description. Return ONLY valid JSON with these fields:
 - title (string, catchy, max 80 chars)
 - description (string, compelling, 2-3 sentences)
@@ -187,14 +187,14 @@ Generate a marketplace listing from the user's description. Return ONLY valid JS
 - tags (array of 3-5 relevant tags)
 Keep it professional but engaging. This is a trusted marketplace where every user is verified human.`,
 
-  listingAnalyzer: `You are an AI analyst for RealHuman X, a sybil-resistant marketplace.
+  listingAnalyzer: `You are an AI analyst for Black Dog Registry, a sybil-resistant marketplace.
 Analyze the listing and provide a brief, helpful assessment covering:
 - Value assessment (fair price?)
 - What to look for before buying
 - Any relevant tips
 Keep it concise (3-4 sentences max). Be helpful, not alarming.`,
 
-  negotiator: `You are an AI negotiation assistant for RealHuman X.
+  negotiator: `You are an AI negotiation assistant for Black Dog Registry.
 Help the user craft a fair counter-offer or negotiate terms.
 Consider both parties' interests. Suggest a price and terms that would be reasonable.
 Be concise and actionable.`,

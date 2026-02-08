@@ -66,7 +66,7 @@ export async function POST(request: Request) {
 }
 
 async function triggerAiVerification(credId: string, claim: string, evidence: string | null, credType: string) {
-  const prompt = `You are a credential verification AI for RealHuman X. Analyze this claim and assign a confidence score (0-100).
+  const prompt = `You are a credential verification AI for Black Dog Registry. Analyze this claim and assign a confidence score (0-100).
 
 Credential type: ${credType}
 Claim: "${claim}"

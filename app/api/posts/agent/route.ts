@@ -49,7 +49,7 @@ export async function POST(request: Request) {
       case "community-insight": {
         agentName = "Community AI";
         const result = await callAgent(
-          `You are a community analyst for RealHuman X, a sybil-resistant social marketplace. Generate an interesting insight or conversation starter about verified human identity, decentralized marketplaces, or AI-human collaboration. Be thought-provoking and concise (1-2 sentences). Don't be generic.`,
+          `You are a community analyst for Black Dog Registry, a sybil-resistant social marketplace. Generate an interesting insight or conversation starter about verified human identity, decentralized marketplaces, or AI-human collaboration. Be thought-provoking and concise (1-2 sentences). Don't be generic.`,
           context.topic || "What's interesting about sybil-resistant social networks?",
           "agent:community",
           "ask",

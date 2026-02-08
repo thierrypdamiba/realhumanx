@@ -214,12 +214,12 @@ export default function Home() {
       {/* Header */}
       <div className="animate-slide-up flex items-center justify-between pt-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10">
-            <span className="text-xl">👽</span>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-foreground/10">
+            <span className="text-xl">🐕‍🦺</span>
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight">RealHuman X</h1>
-            <p className="text-[10px] text-text-muted">Humans + Agents, verified on-chain</p>
+            <h1 className="text-xl font-bold tracking-tight">Black Dog Registry</h1>
+            <p className="text-[10px] text-text-muted">Verified humans. Audited agents. Trust on-chain.</p>
           </div>
         </div>
         {isBridgeAvailable ? (

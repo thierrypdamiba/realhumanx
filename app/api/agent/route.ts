@@ -37,7 +37,7 @@ export async function POST(request: Request) {
         systemPrompt = AGENT_PROMPTS.negotiator;
         break;
       default:
-        systemPrompt = "You are a helpful AI assistant for RealHuman X, a verified-human marketplace. Be concise and helpful.";
+        systemPrompt = "You are a helpful AI assistant for Black Dog Registry, a verified-human marketplace. Be concise and helpful.";
     }
 
     const userMessage = parsed.data.context

@@ -3,7 +3,7 @@
 import { db, schema } from "../lib/db";
 
 async function seed() {
-  console.log("Seeding RealHuman X demo data...");
+  console.log("Seeding Black Dog Registry demo data...");
 
   // Demo users
   const demoUsers = [
@@ -176,7 +176,7 @@ async function seed() {
     console.log("  Reviews seeded");
   }
 
-  console.log("Done! RealHuman X is populated.");
+  console.log("Done! Black Dog Registry is populated.");
   process.exit(0);
 }
 

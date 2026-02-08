@@ -1,5 +1,5 @@
 /**
- * ClawShield Scanner - Adapted for RealHuman X
+ * ClawShield Scanner - Adapted for Black Dog Registry
  *
  * Static security analysis for marketplace listings, skills, and agent code.
  * Based on ClawShield's detection engine (clawshield.dev).

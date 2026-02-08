@@ -99,7 +99,7 @@ export default function AgentsPage() {
           context: {
             topic: "Demonstrate agent capabilities for hackathon judges",
             repo: "alien-id/miniapp-boilerplate",
-            target: "realhumanx",
+            target: "black-dog-registry",
           },
         }),
       });

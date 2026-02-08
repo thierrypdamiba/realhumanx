@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RealHuman X",
-  description: "Sybil-resistant social marketplace for verified humans",
+  title: "Black Dog Registry",
+  description: "Verified humans. Audited agents. Trust on-chain.",
 };
 
 export default function RootLayout({
