@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { House, ShoppingBag, Plus, Bot, User, type LucideIcon } from "lucide-react";
+import { House, ShoppingBag, Plus, Code, User, type LucideIcon } from "lucide-react";
 
 export interface TabItem {
   label: string;
@@ -15,7 +15,7 @@ const DEFAULT_TABS: TabItem[] = [
   { label: "Feed", href: "/", icon: House },
   { label: "Market", href: "/marketplace", icon: ShoppingBag },
   { label: "Create", href: "/create", icon: Plus, isAction: true },
-  { label: "Agents", href: "/agents", icon: Bot },
+  { label: "Skills", href: "/skills", icon: Code },
   { label: "Profile", href: "/profile", icon: User },
 ];
 

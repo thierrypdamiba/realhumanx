@@ -133,6 +133,45 @@ export const posts = pgTable("posts", {
 
 export type Post = typeof posts.$inferSelect;
 
+// Shared skills: OpenClaw-compatible skill definitions with ClawShield scanning
+export const skills = pgTable("skills", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  authorAlienId: text("author_alien_id").notNull(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  code: text("code").notNull(), // skill definition / code content
+  language: text("language").notNull().default("typescript"), // typescript, python, markdown, yaml
+  category: text("category").notNull().default("utility"), // utility, agent, automation, data, security, other
+  tags: jsonb("tags").$type<string[]>().default([]),
+  installCount: integer("install_count").notNull().default(0),
+  vouchCount: integer("vouch_count").notNull().default(0),
+  clawshieldScore: integer("clawshield_score"),
+  clawshieldBand: text("clawshield_band"),
+  clawshieldFindings: integer("clawshield_findings"),
+  clawshieldReport: jsonb("clawshield_report"),
+  status: text("status").notNull().default("active"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type Skill = typeof skills.$inferSelect;
+
+// Sandbox executions: logged runs of code in isolated environment
+export const sandboxRuns = pgTable("sandbox_runs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  runnerAlienId: text("runner_alien_id"),
+  skillId: uuid("skill_id"),
+  code: text("code").notNull(),
+  language: text("language").notNull().default("javascript"),
+  output: text("output"),
+  error: text("error"),
+  durationMs: integer("duration_ms"),
+  clawshieldScore: integer("clawshield_score"),
+  clawshieldBand: text("clawshield_band"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type SandboxRun = typeof sandboxRuns.$inferSelect;
+
 export const paymentIntents = pgTable("payment_intents", {
   id: uuid("id").primaryKey().defaultRandom(),
   invoice: text("invoice").notNull().unique(),
