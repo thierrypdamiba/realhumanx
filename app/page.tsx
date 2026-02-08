@@ -142,6 +142,41 @@ function PostCard({ post, onLike }: { post: FeedPost; onLike: (id: string) => vo
   );
 }
 
+function ProxLockStatus() {
+  const { data } = useQuery({
+    queryKey: ["proxlock"],
+    queryFn: async () => {
+      const res = await fetch("/api/proxy");
+      return res.json();
+    },
+    staleTime: 30000,
+  });
+
+  if (!data) return null;
+
+  return (
+    <div className="animate-slide-up rounded-xl border border-border-subtle bg-surface p-3" style={{ animationDelay: "0.06s" }}>
+      <div className="flex items-center gap-2 mb-2">
+        <Lock size={14} className="text-red-400" />
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-text-dim">ProxLock Gateway</span>
+        <span className="ml-auto flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+          <span className="text-[8px] font-bold text-success">{data.status?.toUpperCase()}</span>
+        </span>
+      </div>
+      <div className="flex gap-2">
+        {data.services?.map((svc: { service: string; configured: boolean }) => (
+          <div key={svc.service} className={`flex items-center gap-1 rounded-md px-2 py-1 ${svc.configured ? "bg-success/10" : "bg-surface-raised"}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${svc.configured ? "bg-success" : "bg-text-dim"}`} />
+            <span className={`text-[9px] font-medium ${svc.configured ? "text-success" : "text-text-dim"}`}>{svc.service}</span>
+          </div>
+        ))}
+      </div>
+      <p className="mt-1.5 text-[9px] text-text-dim">API keys secured server-side. {data.rateLimit} rate limit per verified human.</p>
+    </div>
+  );
+}
+
 export default function Home() {
   const { authToken, isBridgeAvailable } = useAlien();
   const queryClient = useQueryClient();
@@ -303,6 +338,9 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* ProxLock Gateway Status */}
+      <ProxLockStatus />
 
       {/* Quick links */}
       <div className="animate-slide-up flex gap-2" style={{ animationDelay: "0.08s" }}>
