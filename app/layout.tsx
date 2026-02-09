@@ -30,16 +30,41 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              (function ready() {
-                try {
-                  var b = window.__miniAppsBridge__;
-                  if (b && typeof b.postMessage === "function") {
-                    b.postMessage(JSON.stringify({ type: "method", name: "app:ready", payload: {} }));
-                    return;
-                  }
-                  // Bridge not injected yet, retry until it appears
-                  setTimeout(ready, 50);
-                } catch(e) { setTimeout(ready, 50); }
+              (function() {
+                var sent = false;
+                var msg = JSON.stringify({ type: "method", name: "app:ready", payload: {} });
+                function trySend() {
+                  if (sent) return;
+                  try {
+                    var b = window.__miniAppsBridge__;
+                    if (b && typeof b.postMessage === "function") {
+                      b.postMessage(msg);
+                      sent = true;
+                      return;
+                    }
+                  } catch(e) {}
+                  try {
+                    if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.miniAppsBridge) {
+                      window.webkit.messageHandlers.miniAppsBridge.postMessage(msg);
+                      sent = true;
+                      return;
+                    }
+                  } catch(e) {}
+                  try {
+                    if (window.MiniAppsBridge && typeof window.MiniAppsBridge.postMessage === "function") {
+                      window.MiniAppsBridge.postMessage(msg);
+                      sent = true;
+                      return;
+                    }
+                  } catch(e) {}
+                }
+                // Try immediately, then poll for 5 seconds
+                trySend();
+                var attempts = 0;
+                var iv = setInterval(function() {
+                  trySend();
+                  if (sent || ++attempts > 100) clearInterval(iv);
+                }, 50);
               })();
             `,
           }}
