@@ -25,6 +25,10 @@ async function verifySignature(
   );
 }
 
+export async function GET() {
+  return NextResponse.json({ status: "ok", endpoint: "payment-webhook" });
+}
+
 export async function POST(request: Request) {
   const rawBody = await request.text();
   const signatureHex = request.headers.get("x-webhook-signature") ?? "";
