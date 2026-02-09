@@ -9,6 +9,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { GitHubLink } from "@/features/github/components/github-link";
 import { CredentialManager } from "@/features/credentials/components/credential-manager";
+import { InlineBadge } from "@/features/muzzle/components/safety-badge";
 
 export default function ProfilePage() {
   const { authToken, isBridgeAvailable, contractVersion } = useAlien();
@@ -160,7 +161,7 @@ export default function ProfilePage() {
           <Link href="/create" className="text-[11px] font-semibold text-accent-light transition-all duration-200 hover:text-accent active:scale-95">Create new</Link>
         </div>
         {myListings && myListings.length > 0 ? (
-          myListings.map((listing: { id: string; title: string; price: string; token: string; viewCount: number }) => (
+          myListings.map((listing: { id: string; title: string; price: string; token: string; viewCount: number; clawshieldBand?: string | null; clawshieldScore?: number | null }) => (
             <Link
               key={listing.id}
               href={`/marketplace/${listing.id}`}
@@ -172,7 +173,12 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <p className="text-[13px] font-semibold">{listing.title}</p>
-                  <p className="text-[10px] text-text-dim tabular-nums">{listing.viewCount} views</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <p className="text-[10px] text-text-dim tabular-nums">{listing.viewCount} views</p>
+                    {listing.clawshieldBand && (
+                      <InlineBadge riskBand={listing.clawshieldBand as "LOW" | "MEDIUM" | "HIGH" | "CRITICAL"} score={listing.clawshieldScore || 0} />
+                    )}
+                  </div>
                 </div>
               </div>
               <span className="text-xs font-bold text-accent tabular-nums">{listing.price} {listing.token}</span>
