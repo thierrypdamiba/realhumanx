@@ -58,47 +58,53 @@ export default function ProfilePage() {
     <>
       {/* Profile Card */}
       <div className="animate-slide-up pt-4">
-        <div className="gradient-border rounded-xl bg-surface p-5">
-          <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/15 text-2xl">
+        <div className="relative rounded-2xl border border-border-subtle bg-surface/80 backdrop-blur-sm p-5 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/[0.06] via-transparent to-success/[0.03] pointer-events-none" />
+          <div className="absolute top-0 right-0 w-32 h-32 bg-accent/[0.04] rounded-full blur-3xl pointer-events-none" />
+          <div className="relative flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/10 ring-1 ring-accent/20 text-2xl">
               👽
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold">
+                <h1 className="text-lg font-bold truncate">
                   {user ? `${user.alienId.slice(0, 6)}...${user.alienId.slice(-4)}` : "Not connected"}
                 </h1>
                 {user ? (
-                  <button onClick={copyAlienId} className="p-1">
-                    {copied ? <Check size={12} className="text-success" /> : <Copy size={12} className="text-text-dim" />}
+                  <button onClick={copyAlienId} className="shrink-0 flex h-6 w-6 items-center justify-center rounded-lg bg-white/[0.04] ring-1 ring-white/[0.06] transition-all duration-200 hover:bg-white/[0.08] active:scale-90">
+                    {copied ? <Check size={11} className="text-success" /> : <Copy size={11} className="text-text-dim" />}
                   </button>
                 ) : null}
                 {user ? (
-                  <span className="flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5">
+                  <span className="shrink-0 flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-0.5 ring-1 ring-success/15">
                     <ShieldCheck size={10} className="text-success" />
-                    <span className="text-[9px] font-semibold text-success">Verified</span>
+                    <span className="text-[9px] font-bold text-success">Verified</span>
                   </span>
                 ) : null}
               </div>
-              <p className="text-xs text-text-muted">
+              <p className="text-[11px] text-text-muted mt-0.5">
                 {user ? `Member since ${new Date(user.createdAt).toLocaleDateString()}` : "Open in Alien app"}
               </p>
             </div>
           </div>
 
           {user ? (
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              <div className="rounded-lg bg-surface-raised p-2 text-center">
-                <p className="text-sm font-bold">{myListings?.length || 0}</p>
-                <p className="text-[9px] text-text-dim">Listings</p>
+            <div className="relative mt-4 grid grid-cols-3 gap-2">
+              <div className="rounded-xl bg-white/[0.03] p-3 text-center ring-1 ring-white/[0.04] transition-all duration-200 hover:bg-white/[0.05]">
+                <p className="text-sm font-bold tabular-nums">{myListings?.length || 0}</p>
+                <p className="text-[9px] text-text-dim font-medium mt-0.5">Listings</p>
               </div>
-              <div className="rounded-lg bg-surface-raised p-2 text-center">
-                <p className="text-sm font-bold">100%</p>
-                <p className="text-[9px] text-text-dim">Human</p>
+              <div className="rounded-xl bg-white/[0.03] p-3 text-center ring-1 ring-white/[0.04] transition-all duration-200 hover:bg-white/[0.05]">
+                <p className={`text-sm font-bold ${user.reputationScore >= 80 ? "text-success" : "text-warning"}`}>
+                  {user.reputationScore}%
+                </p>
+                <p className="text-[9px] text-text-dim font-medium mt-0.5">Human</p>
               </div>
-              <div className="rounded-lg bg-surface-raised p-2 text-center">
-                <p className="text-sm font-bold">0</p>
-                <p className="text-[9px] text-text-dim">Disputes</p>
+              <div className="rounded-xl bg-white/[0.03] p-3 text-center ring-1 ring-white/[0.04] transition-all duration-200 hover:bg-white/[0.05]">
+                <p className={`text-sm font-bold tabular-nums ${user.disputeCount > 0 ? "text-danger" : ""}`}>
+                  {user.disputeCount}
+                </p>
+                <p className="text-[9px] text-text-dim font-medium mt-0.5">Disputes</p>
               </div>
             </div>
           ) : null}
@@ -106,9 +112,9 @@ export default function ProfilePage() {
       </div>
 
       {/* Alien SDK Features */}
-      <div className="animate-slide-up rounded-xl border border-border-subtle bg-surface p-4" style={{ animationDelay: "0.05s" }}>
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-text-dim">Alien SDK Integration</h2>
-        <div className="space-y-2">
+      <div className="animate-slide-up rounded-2xl border border-border-subtle bg-surface/80 backdrop-blur-sm p-4" style={{ animationDelay: "0.05s" }}>
+        <h2 className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-text-dim">Alien SDK Integration</h2>
+        <div className="space-y-1.5">
           {[
             { label: "Bridge", value: isBridgeAvailable ? "Connected" : "Browser mode", active: isBridgeAvailable, icon: Smartphone },
             { label: "Contract", value: contractVersion || "N/A", active: !!contractVersion, icon: ShieldCheck },
@@ -120,12 +126,14 @@ export default function ProfilePage() {
             { label: "Platform", value: launchParams?.platform || "web", active: !!launchParams?.platform, icon: Smartphone },
             { label: "Deep Link", value: launchParams?.startParam || "none", active: !!launchParams?.startParam, icon: ShieldCheck },
           ].map(({ label, value, active, icon: Icon }) => (
-            <div key={label} className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Icon size={12} className={active ? "text-success" : "text-text-dim"} />
+            <div key={label} className="flex items-center justify-between rounded-lg px-2.5 py-2 transition-all duration-200 hover:bg-white/[0.02]">
+              <div className="flex items-center gap-2.5">
+                <div className={`flex h-5 w-5 items-center justify-center rounded-md ${active ? "bg-success/10" : "bg-white/[0.03]"}`}>
+                  <Icon size={11} className={active ? "text-success" : "text-text-dim"} />
+                </div>
                 <span className="text-xs text-text-muted">{label}</span>
               </div>
-              <span className={`text-xs font-medium ${active ? "text-success" : "text-text-dim"}`}>
+              <span className={`text-[11px] font-medium ${active ? "text-success" : "text-text-dim"}`}>
                 {value}
               </span>
             </div>
@@ -146,39 +154,41 @@ export default function ProfilePage() {
       ) : null}
 
       {/* My Listings */}
-      <div className="animate-slide-up space-y-3" style={{ animationDelay: "0.15s" }}>
+      <div className="animate-slide-up space-y-2.5" style={{ animationDelay: "0.15s" }}>
         <div className="flex items-center justify-between">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-text-dim">My Listings</h2>
-          <Link href="/create" className="text-xs text-accent">Create new</Link>
+          <h2 className="text-[10px] font-semibold uppercase tracking-widest text-text-dim">My Listings</h2>
+          <Link href="/create" className="text-[11px] font-semibold text-accent-light transition-all duration-200 hover:text-accent active:scale-95">Create new</Link>
         </div>
         {myListings && myListings.length > 0 ? (
           myListings.map((listing: { id: string; title: string; price: string; token: string; viewCount: number }) => (
             <Link
               key={listing.id}
               href={`/marketplace/${listing.id}`}
-              className="card-hover flex items-center justify-between rounded-xl border border-border-subtle bg-surface p-3"
+              className="group flex items-center justify-between rounded-2xl border border-border-subtle bg-surface/80 backdrop-blur-sm p-3.5 transition-all duration-300 hover:bg-surface-hover hover:border-white/[0.08]"
             >
               <div className="flex items-center gap-3">
-                <Package size={16} className="text-accent-light" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/10 ring-1 ring-accent/15">
+                  <Package size={14} className="text-accent-light" />
+                </div>
                 <div>
-                  <p className="text-sm font-medium">{listing.title}</p>
-                  <p className="text-[10px] text-text-dim">{listing.viewCount} views</p>
+                  <p className="text-[13px] font-semibold">{listing.title}</p>
+                  <p className="text-[10px] text-text-dim tabular-nums">{listing.viewCount} views</p>
                 </div>
               </div>
-              <span className="text-xs font-semibold text-accent">{listing.price} {listing.token}</span>
+              <span className="text-xs font-bold text-accent tabular-nums">{listing.price} {listing.token}</span>
             </Link>
           ))
         ) : (
-          <div className="rounded-xl border border-border-subtle bg-surface p-6 text-center">
+          <div className="rounded-2xl border border-border-subtle bg-surface/80 backdrop-blur-sm p-6 text-center">
             <p className="text-xs text-text-muted">No listings yet</p>
           </div>
         )}
       </div>
 
       {/* Powered by */}
-      <div className="animate-slide-up space-y-2" style={{ animationDelay: "0.15s" }}>
-        <h2 className="text-xs font-semibold uppercase tracking-widest text-text-dim">Powered By</h2>
-        <div className="grid grid-cols-2 gap-2">
+      <div className="animate-slide-up space-y-2.5" style={{ animationDelay: "0.2s" }}>
+        <h2 className="text-[10px] font-semibold uppercase tracking-widest text-text-dim">Powered By</h2>
+        <div className="grid grid-cols-2 gap-1.5">
           {[
             { name: "Alien Protocol", desc: "Identity, Payments, Bridge" },
             { name: "Kalibr", desc: "Agent Routing" },
@@ -187,9 +197,11 @@ export default function ProfilePage() {
             { name: "GitHub", desc: "Developer Identity" },
             { name: "Cline", desc: "AI Coding" },
           ].map(({ name, desc }) => (
-            <div key={name} className="rounded-lg border border-border-subtle bg-surface p-2.5">
-              <div className="flex items-center gap-2">
-                <Bot size={12} className="text-accent-light" />
+            <div key={name} className="rounded-xl border border-border-subtle bg-surface/80 p-3 transition-all duration-200 hover:bg-surface-hover">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-accent/10 ring-1 ring-accent/10">
+                  <Bot size={11} className="text-accent-light" />
+                </div>
                 <div>
                   <p className="text-[10px] font-semibold">{name}</p>
                   <p className="text-[9px] text-text-dim">{desc}</p>

@@ -172,6 +172,36 @@ export const sandboxRuns = pgTable("sandbox_runs", {
 
 export type SandboxRun = typeof sandboxRuns.$inferSelect;
 
+// Events: community gatherings with sybil-resistant RSVPs
+export const events = pgTable("events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  date: text("date").notNull(), // "2026-02-15"
+  time: text("time").notNull(), // "6:00 PM"
+  location: text("location").notNull(),
+  host: text("host").notNull(),
+  hostColor: text("host_color").notNull().default("text-blue-400"),
+  hostBg: text("host_bg").notNull().default("bg-blue-400/10"),
+  capacity: integer("capacity").notNull().default(50),
+  tags: jsonb("tags").$type<string[]>().default([]),
+  requiresVerification: boolean("requires_verification").notNull().default(true),
+  creatorAlienId: text("creator_alien_id").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type Event = typeof events.$inferSelect;
+
+// Event RSVPs: one per verified human per event
+export const eventRsvps = pgTable("event_rsvps", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  eventId: uuid("event_id").notNull(),
+  userAlienId: text("user_alien_id").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type EventRsvp = typeof eventRsvps.$inferSelect;
+
 export const paymentIntents = pgTable("payment_intents", {
   id: uuid("id").primaryKey().defaultRandom(),
   invoice: text("invoice").notNull().unique(),
