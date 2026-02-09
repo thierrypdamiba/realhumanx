@@ -61,7 +61,7 @@ export async function POST(request: Request) {
       metadata: { listingId: listing.id, category: listing.category },
     }).catch(() => {});
 
-    // Auto-trigger agent analysis post (fire and forget)
+    // Auto-trigger agent analysis post (fire and forget, includes scan results)
     fetch(new URL("/api/posts/agent", request.url).toString(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -74,6 +74,8 @@ export async function POST(request: Request) {
           price: listing.price,
           token: listing.token,
           category: listing.category,
+          muzzleBand: report.riskBand,
+          muzzleFindings: report.summary.totalFindings,
         },
       }),
     }).catch(() => {});

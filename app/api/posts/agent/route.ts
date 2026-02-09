@@ -15,9 +15,14 @@ export async function POST(request: Request) {
     switch (trigger) {
       case "new-listing": {
         agentName = "Kalibr Market Analyst";
+        // Include Muzzle scan results if available
+        let scanInfo = "";
+        if (context.muzzleBand && context.muzzleBand !== "LOW") {
+          scanInfo = ` SECURITY ALERT: Muzzle scanner flagged this listing as ${context.muzzleBand} risk with ${context.muzzleFindings} findings.`;
+        }
         const result = await callAgent(
           AGENT_PROMPTS.listingAnalyzer,
-          `New listing posted: ${context.title} - ${context.description}. Price: ${context.price} ${context.token}. Category: ${context.category}.`,
+          `New listing posted: ${context.title} - ${context.description}. Price: ${context.price} ${context.token}. Category: ${context.category}.${scanInfo}`,
           "agent:kalibr",
           "analyze-listing",
         );
