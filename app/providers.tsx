@@ -19,17 +19,21 @@ declare global {
 function BridgeDebugPanel() {
   const { isBridgeAvailable, authToken, contractVersion } = useAlien();
   const launchParams = useLaunchParams();
+  const [mounted, setMounted] = useState(false);
   const [debug, setDebug] = useState<Window["__ALIEN_BRIDGE_DEBUG__"]>(undefined);
 
   useEffect(() => {
+    setMounted(true);
     const check = () => setDebug(window.__ALIEN_BRIDGE_DEBUG__);
     check();
     const iv = setInterval(check, 500);
     return () => clearInterval(iv);
   }, []);
 
-  // Only show in development or when bridge issues are detected
-  if (process.env.NODE_ENV !== "development" && isBridgeAvailable) return null;
+  // Don't render during SSR to avoid hydration mismatch
+  if (!mounted) return null;
+  // Hide when bridge is working (no need to debug)
+  if (isBridgeAvailable) return null;
 
   return (
     <div style={{
