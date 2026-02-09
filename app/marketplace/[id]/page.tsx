@@ -125,7 +125,6 @@ export default function ListingDetailPage() {
           iconUrl: "https://avatars.githubusercontent.com/u/40111175?s=40&v=4",
           quantity: 1,
         },
-        test: "paid" as const,
       });
     } catch {
       toast.error("Payment error");
