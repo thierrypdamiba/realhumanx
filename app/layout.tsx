@@ -30,12 +30,16 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              (function() {
+              (function ready() {
                 try {
-                  if (window.parent && window.parent !== window) {
-                    window.parent.postMessage(JSON.stringify({ type: "method", method: "app:ready", params: {} }), "*");
+                  var b = window.__miniAppsBridge__;
+                  if (b && typeof b.postMessage === "function") {
+                    b.postMessage(JSON.stringify({ type: "method", name: "app:ready", payload: {} }));
+                    return;
                   }
-                } catch(e) {}
+                  // Bridge not injected yet, retry until it appears
+                  setTimeout(ready, 50);
+                } catch(e) { setTimeout(ready, 50); }
               })();
             `,
           }}
